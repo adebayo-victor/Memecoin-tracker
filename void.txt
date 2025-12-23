@@ -1,0 +1,45 @@
+# wallet adding function
+def add_wallet():
+    
+    data = get_wallets()
+    address = input("Enter wallet address: ").strip()
+    tag = input("Enter wallet tag: ").strip()
+
+    data["wallets"].append({"address": address, "tag": tag})
+    save_wallets(data)
+    print(f"Wallet saved as {tag}")
+
+# wallet removal function
+def remove_wallet():
+    data = get_wallets()
+    tag = input("Enter wallet tag: ").strip()
+
+    new_list = [w for w in data["wallets"] if w["tag"] != tag]
+
+    if len(new_list) == len(data["wallets"]):
+        print("No wallet found with that tag.")
+    else:
+        print(f"Wallet tagged '{tag}' removed.")
+    
+    data["wallets"] = new_list
+    save_wallets(data)
+
+# tag change function
+def tag_change():
+    data = get_wallets()
+    old_tag = input("Enter wallet tag: ").strip()
+    new_tag = input("Enter new wallet tag: ").strip()
+
+    updated = False
+
+    for wallet in data['wallets']:
+        if wallet['tag'] == old_tag:
+            wallet['tag'] = new_tag
+            updated = True
+
+    if updated:
+        print(f"Wallet tag changed from {old_tag} → {new_tag}")
+    else:
+        print("No wallet found with that tag.")
+
+    save_wallets(data)

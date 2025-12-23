@@ -1,0 +1,28 @@
+{
+    "wallets": [
+        {
+            "address": "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045",
+            "tag": "Vitalik\u2019s wallet"
+        },
+        {
+            "address": "0xE592427A0AEce92De3Edee1F18E0157C05861564",
+            "tag": "Uniswap Deployer / Router"
+        },
+        {
+            "address": "0x28C6c06298d514Db089934071355E5743bf21d60",
+            "tag": "Binance Hot Wallet"
+        },
+        {
+            "address": "0x503828976D22510aad0201ac7EC88293211D23Da",
+            "tag": "Coinbase Hot Wallet"
+        },
+        {
+            "address": "0x742d35Cc6634C0532925a3b844Bc454e4438f44e",
+            "tag": "3rdHorseman"
+        },
+        {
+            "address": "0x017c17bf20e24a2c791c809b0b9d0869b2fab3f9",
+            "tag": "Brother Mike "
+        }
+    ]
+}
