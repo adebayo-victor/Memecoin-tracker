@@ -5,13 +5,17 @@ import time
 from tabulate import tabulate
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify, send_file, make_response
 import threading
+from dotenv import load_dotenv
+
+# Load variables from .env file
+load_dotenv()
 #tracking bucket and state monitor
 TRACKER_RUNNING = False
 LIVE_TX_BUFFER = []
 
 app = Flask(__name__)
 #credentials
-API_KEY = "8SY2NPH52ESRP5XAVG3EZNBTHRWTTHB94Y"
+API_KEY = os.getenv("API_KEY")
 # wallet saving function
 def save_wallets(data):
     with open("wallets.json", "w") as file:
