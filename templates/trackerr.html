@@ -347,7 +347,7 @@
             const duration = parseInt(document.getElementById("track_duration").value) || 60;
 
             try {
-                const res = await fetchWithRetry("/start_tracking", {
+                const res = await fetchWithRetry("https://memecoin-tracker.onrender.com/start_tracking", {
                     method: "POST",
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ refresh, duration })

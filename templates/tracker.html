@@ -413,7 +413,7 @@
 
         document.getElementById("add_wallet_form").onsubmit = (e) => {
             e.preventDefault();
-            handleFormSubmit("/add_wallet", { 
+            handleFormSubmit("https://memecoin-tracker.onrender.com/add_wallet", { 
                 address: document.getElementById("wallet_address").value, 
                 tag: document.getElementById("wallet_tag").value 
             }, e.target);
@@ -421,14 +421,14 @@
 
         document.getElementById("remove_wallet_form").onsubmit = (e) => {
             e.preventDefault();
-            handleFormSubmit("/remove_wallet", { 
+            handleFormSubmit("https://memecoin-tracker.onrender.com/remove_wallet", { 
                 tag: document.getElementById("remove_wallet_tag").value 
             }, e.target);
         };
 
         document.getElementById("change_tag_form").onsubmit = (e) => {
             e.preventDefault();
-            handleFormSubmit("/change_tag", { 
+            handleFormSubmit("https://memecoin-tracker.onrender.com/change_tag", { 
                 tag: document.getElementById("change_old_tag").value,
                 new_tag: document.getElementById("change_new_tag").value 
             }, e.target);
