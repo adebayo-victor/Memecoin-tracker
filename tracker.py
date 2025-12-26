@@ -158,7 +158,9 @@ def track_wallets_worker(refresh=2, duration=60):
             break
 
         time.sleep(refresh)
-
+@app.route("/")
+def index():
+    return render_template("index.html")
 @app.route("/tracker")
 def tracker():
     return render_template("tracker1.html")

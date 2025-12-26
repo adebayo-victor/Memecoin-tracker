@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhalePulse | Coordinated Activity Intelligence</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --accent: #fb923c;
+            --bg-dark: #05060b;
+        }
+
+        body {
+            font-family: 'Space+Grotesk', sans-serif;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Animated Grid Background */
+        .cyber-grid {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            z-index: -1;
+        }
+
+        .cyber-grid::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at center, transparent 0%, var(--bg-dark) 80%);
+        }
+
+        .glow-orb {
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, transparent 70%);
+            filter: blur(40px);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-20px) rotate(2deg); }
+        }
+
+        @keyframes glitch {
+            0% { clip: rect(44px, 450px, 56px, 0); }
+            20% { clip: rect(12px, 450px, 98px, 0); }
+            40% { clip: rect(67px, 450px, 23px, 0); }
+            60% { clip: rect(21px, 450px, 78px, 0); }
+            80% { clip: rect(90px, 450px, 12px, 0); }
+            100% { clip: rect(44px, 450px, 56px, 0); }
+        }
+
+        .animate-float { animation: float 6s ease-in-out infinite; }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .hero-title {
+            font-weight: 700;
+            background: linear-gradient(to bottom right, #fff 40%, rgba(255,255,255,0.4));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom "E" Three-Dash Branding */
+        .dash-e {
+            display: inline-flex;
+            flex-direction: column;
+            justify-content: space-between;
+            width: 14px;
+            height: 18px;
+            vertical-align: middle;
+            margin-bottom: 4px;
+        }
+        .dash-e span {
+            display: block;
+            width: 100%;
+            height: 2.5px;
+            background-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .jentle-branding {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 0.5em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.8);
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .page-fade {
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+        }
+        .page-hidden {
+            opacity: 0;
+            transform: scale(0.98);
+            pointer-events: none;
+            display: none;
+        }
+
+        .stagger-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .stagger-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <div class="cyber-grid"></div>
+    <div class="glow-orb top-[-100px] left-[-100px]"></div>
+    <div class="glow-orb bottom-[-100px] right-[-100px]"></div>
+
+    <!-- PAGE: LANDING -->
+    <main id="page_landing" class="page-fade relative z-10 min-h-screen flex flex-col items-center justify-center px-6">
+        <div class="max-w-4xl w-full text-center space-y-10">
+            
+            <!-- Custom Branding: For JENTLE (with dash E) -->
+            <div class="stagger-in" style="transition-delay: 0.1s">
+                <div class="jentle-branding text-lg md:text-2xl font-black mb-4">
+                    FOR JENTL<div class="dash-e mx-1"><span></span><span></span><span></span></div> ONLY
+                </div>
+                <div class="h-[1px] w-24 bg-gradient-to-r from-transparent via-indigo-500 to-transparent mx-auto opacity-50"></div>
+            </div>
+
+            <div class="stagger-in" style="transition-delay: 0.2s">
+                <span class="px-4 py-1.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-400 text-xs font-bold uppercase tracking-widest">
+                    <i class="fa-solid fa-satellite-dish mr-2 animate-pulse"></i> Encrypted Terminal
+                </span>
+            </div>
+
+            <h1 class="hero-title text-6xl md:text-8xl stagger-in" style="transition-delay: 0.3s">
+                Trace the <br> <span class="text-indigo-500">Invisible</span> Flow.
+            </h1>
+
+            <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto stagger-in" style="transition-delay: 0.4s">
+                Detect coordinated whale activity and hidden market manipulation with neural pattern matching.
+            </p>
+
+            <div class="flex flex-col md:flex-row gap-4 justify-center items-center stagger-in" style="transition-delay: 0.5s">
+                <a href="">
+                    <button id="btn_launch" class="px-10 py-5 bg-indigo-600 hover:bg-indigo-500 rounded-2xl font-bold flex items-center gap-3 transition-all transform hover:-translate-y-1 shadow-2xl shadow-indigo-500/20">
+                        ENTER TERMINAL <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </a>
+            </div>
+
+            <div class="mt-20 grid grid-cols-1 md:grid-cols-3 gap-6 stagger-in" style="transition-delay: 0.7s">
+                <div class="glass-panel p-6 rounded-3xl text-left animate-float">
+                    <i class="fa-solid fa-microchip text-indigo-500 mb-4 text-2xl"></i>
+                    <h3 class="font-bold text-white mb-2 uppercase tracking-tighter">Neural Patterning</h3>
+                    <p class="text-xs text-slate-500 font-mono">[CLUSTERING_ON]</p>
+                </div>
+                <div class="glass-panel p-6 rounded-3xl text-left animate-float" style="animation-delay: -2s">
+                    <i class="fa-solid fa-shield-halved text-orange-500 mb-4 text-2xl"></i>
+                    <h3 class="font-bold text-white mb-2 uppercase tracking-tighter">Fidelity Score</h3>
+                    <p class="text-xs text-slate-500 font-mono">[99.4%_ACCURACY]</p>
+                </div>
+                <div class="glass-panel p-6 rounded-3xl text-left animate-float" style="animation-delay: -4s">
+                    <i class="fa-solid fa-bolt text-yellow-500 mb-4 text-2xl"></i>
+                    <h3 class="font-bold text-white mb-2 uppercase tracking-tighter">Sub-ms Hook</h3>
+                    <p class="text-xs text-slate-500 font-mono">[INSTANT_FEED]</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- PAGE: DASHBOARD -->
+    <main id="page_dashboard" class="page-fade page-hidden pb-24 px-6 pt-10">
+        <div class="max-w-md mx-auto">
+             <div id="tracker_section">
+                <!-- Top Header for Dashboard -->
+                <div class="flex justify-between items-center mb-8 px-2">
+                    <div class="font-mono text-[10px] text-indigo-400 font-bold uppercase tracking-widest flex items-center">
+                        JENTL<div class="dash-e mx-1 h-3 w-2"><span></span><span></span><span></span></div> TERMINAL
+                    </div>
+                    <div class="text-[10px] text-slate-500 font-mono uppercase">SECURE_LINK_STABLE</div>
+                </div>
+
+                <div id="top_whale_panel" class="hidden mb-6">
+                    <div id="highlight_label" class="text-[9px] tracking-[0.2em] font-black uppercase mb-2 flex items-center gap-2">
+                        <i id="highlight_icon" class="fa-solid fa-crown text-indigo-400"></i> 
+                        <span id="highlight_title">Whale Movement</span>
+                    </div>
+                    <div id="highlight_container" class="glass-panel p-4 rounded-3xl border-indigo-500/20"></div>
+                </div>
+
+                <div class="text-center mb-8">
+                    <h2 class="text-xs tracking-[0.3em] font-bold opacity-70 mb-6 uppercase">Control Engine</h2>
+                    <div class="glass-panel p-6 rounded-3xl text-left">
+                        <form id="tracker_config_form">
+                            <div class="grid grid-cols-2 gap-3 mb-4">
+                                <div>
+                                    <label class="text-[10px] uppercase opacity-50 block mb-1">Duration</label>
+                                    <input type="number" id="track_duration" value="60" class="bg-black/40 border border-white/10 w-full rounded-lg px-3 py-2 text-sm text-white">
+                                </div>
+                                <div>
+                                    <label class="text-[10px] uppercase opacity-50 block mb-1">Ping (s)</label>
+                                    <input type="number" id="track_ping" value="2" class="bg-black/40 border border-white/10 w-full rounded-lg px-3 py-2 text-sm text-white">
+                                </div>
+                            </div>
+                            <button type="submit" id="btn_tracker_toggle" class="w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-sm hover:bg-indigo-500 transition">START SCAN</button>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-[10px] tracking-[0.2em] font-semibold opacity-60 uppercase">Live Intelligence</h3>
+                        <div id="status_indicator" class="hidden text-green-400 text-[10px] font-bold animate-pulse">● FEED ACTIVE</div>
+                    </div>
+                    <div class="glass-panel rounded-3xl overflow-hidden">
+                        <div class="max-h-[400px] overflow-y-auto" id="feed_scroll_area">
+                            <table class="w-full text-left text-[11px]">
+                                <tbody id="event_feed_body" class="divide-y divide-white/5">
+                                    <tr><td class="p-8 text-center opacity-30 italic">Connecting to node...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="text-[10px] tracking-[0.2em] font-semibold opacity-60 uppercase mb-4">System Dump</h3>
+                    <div id="raw_dump" class="bg-black/40 font-mono text-[9px] text-green-400 p-4 rounded-2xl border border-green-500/20 max-h-[150px] overflow-auto">Ready.</div>
+                </div>
+             </div>
+        </div>
+
+        <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm glass-panel rounded-2xl px-6 py-4 z-50">
+            <div class="flex justify-around items-center text-[10px] font-bold">
+                <button class="flex flex-col items-center opacity-40"><i class="fa-solid fa-wallet text-lg mb-1"></i>WALLET</button>
+                <button class="flex flex-col items-center text-indigo-400"><i class="fa-solid fa-chart-line text-lg mb-1"></i>TRACKER</button>
+                <button class="flex flex-col items-center opacity-40"><i class="fa-solid fa-bolt text-lg mb-1"></i>ALERTS</button>
+            </div>
+        </nav>
+    </main>
+
+    <script>
+        const pageLanding = document.getElementById('page_landing');
+        const pageDashboard = document.getElementById('page_dashboard');
+
+        window.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.stagger-in').forEach((el, i) => {
+                setTimeout(() => el.classList.add('visible'), i * 100);
+            });
+        });
+
+        document.getElementById('btn_launch').onclick = () => {
+            pageLanding.classList.add('page-hidden');
+            setTimeout(() => {
+                pageLanding.style.display = 'none';
+                pageDashboard.style.display = 'block';
+                setTimeout(() => pageDashboard.classList.remove('page-hidden'), 50);
+            }, 600);
+        };
+
+        let isTracking = false;
+
+        function formatValue(val) {
+            const num = parseFloat(val);
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
+            return num.toLocaleString();
+        }
+
+        document.getElementById("tracker_config_form").onsubmit = (e) => {
+            e.preventDefault();
+            isTracking = !isTracking;
+            updateUI();
+            if(isTracking) startMockStream();
+        };
+
+        function updateUI() {
+            const btn = document.getElementById("btn_tracker_toggle");
+            const status = document.getElementById("status_indicator");
+            btn.innerText = isTracking ? "ABORT SCAN" : "START SCAN";
+            btn.className = isTracking ? "w-full bg-red-500 text-white font-bold py-3 rounded-xl text-sm" : "w-full bg-indigo-600 text-white font-bold py-3 rounded-xl text-sm";
+            status.classList.toggle("hidden", !isTracking);
+        }
+
+        function startMockStream() {
+            if(!isTracking) return;
+            
+            const sampleAlert = {
+                "type": "alert",
+                "timestamp": Date.now(),
+                "alert_kind": "coordinated_activity",
+                "token": { "symbol": "JNTL", "contract": "0xDash...8888" },
+                "wallets": [
+                    { "tag": "Alpha Whale", "address": "0x9999...1111" },
+                    { "tag": "Beta Whale", "address": "0x8888...2222" }
+                ],
+                "details": { "pattern": "simultaneous_buy", "direction": "buy", "amounts": ["1500000", "1450000"] },
+                "confidence": "high"
+            };
+
+            renderEvent(sampleAlert);
+            document.getElementById("raw_dump").innerText = JSON.stringify(sampleAlert, null, 2);
+            
+            setTimeout(() => {
+                if(isTracking) startMockStream();
+            }, 4000);
+        }
+
+        function renderEvent(item) {
+            const feed = document.getElementById("event_feed_body");
+            if (feed.innerText.includes("node")) feed.innerHTML = "";
+            
+            if (item.type === 'alert') {
+                showHighlight(item);
+                const html = `
+                    <tr class="bg-indigo-500/5">
+                        <td class="p-4 border-l-2 border-indigo-500">
+                            <div class="text-indigo-400 text-[9px] font-black uppercase mb-1">COORDINATED CLUSTER</div>
+                            <div class="text-white font-bold">${item.token.symbol} Entry: ${item.wallets.length} Addresses Identified</div>
+                        </td>
+                    </tr>`;
+                feed.insertAdjacentHTML('afterbegin', html);
+            }
+        }
+
+        function showHighlight(item) {
+            const panel = document.getElementById("top_whale_panel");
+            const container = document.getElementById("highlight_container");
+            
+            panel.classList.remove("hidden");
+            
+            container.innerHTML = `
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xl font-black text-white">${item.token.symbol}</span>
+                        <span class="text-[10px] bg-indigo-500/20 text-indigo-400 px-2 py-0.5 border border-indigo-500/30 rounded-full font-bold">PATTERN: COORDINATED</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        ${item.wallets.map((w, i) => `
+                            <div class="bg-white/5 p-3 rounded-2xl border border-white/10">
+                                <div class="text-[10px] text-indigo-400 font-bold">${w.tag}</div>
+                                <div class="text-xs font-black text-white mt-1">${formatValue(item.details.amounts[i])} IN</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
