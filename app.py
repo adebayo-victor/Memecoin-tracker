@@ -7,8 +7,7 @@ from flask import Flask, render_template, request, redirect, session, url_for, j
 import threading
 from dotenv import load_dotenv
 from flask_cors import CORS
-#initializing CORS
-CORS(app)
+
 # Load variables from .env file
 load_dotenv()
 #tracking bucket and state monitor
@@ -16,6 +15,8 @@ TRACKER_RUNNING = False
 LIVE_TX_BUFFER = []
 
 app = Flask(__name__)
+#initializing CORS
+CORS(app)
 #credentials
 API_KEY = os.getenv("API_KEY")
 # wallet saving function
