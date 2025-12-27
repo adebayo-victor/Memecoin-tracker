@@ -6,7 +6,9 @@ from tabulate import tabulate
 from flask import Flask, render_template, request, redirect, session, url_for, jsonify, send_file, make_response
 import threading
 from dotenv import load_dotenv
-
+from flask_cors import CORS
+#initializing CORS
+CORS(app)
 # Load variables from .env file
 load_dotenv()
 #tracking bucket and state monitor

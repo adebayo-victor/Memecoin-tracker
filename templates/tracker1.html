@@ -336,8 +336,6 @@
                 showToast("Wallet Added");
             } catch (err) {
                 showToast("Error: " + err.message);
-                // Optimistic UI for local testing if server is down
-                // trackedWallets.push({ address, tag }); renderWallets(); closeModals();
             } finally {
                 btn.disabled = false; btn.style.opacity = "1";
             }
@@ -349,6 +347,8 @@
             const address = document.getElementById("remove_wallet_select").value;
             const btn = document.getElementById("remove_wallet_submit");
 
+            if (!address) return showToast("Please select a wallet");
+
             btn.disabled = true; btn.style.opacity = "0.5";
             try {
                 const response = await fetch(`${BASE_URL}/remove_wallet`, {
@@ -356,6 +356,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ address })
                 });
+                
                 if (!response.ok) throw new Error("Delete failed");
                 
                 trackedWallets = trackedWallets.filter(w => w.address !== address);
@@ -376,6 +377,8 @@
             const newTag = document.getElementById("new_wallet_tag").value.trim();
             const btn = document.getElementById("change_tag_submit");
 
+            if (!address || !newTag) return showToast("Missing fields");
+
             btn.disabled = true; btn.style.opacity = "0.5";
             try {
                 const response = await fetch(`${BASE_URL}/change_tag`, {
@@ -383,12 +386,17 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ address, tag: newTag })
                 });
+                
                 if (!response.ok) throw new Error("Update failed");
 
                 const wallet = trackedWallets.find(w => w.address === address);
-                if (wallet) { wallet.tag = newTag; renderWallets(); }
+                if (wallet) { 
+                    wallet.tag = newTag; 
+                    renderWallets(); 
+                }
                 showToast("Tag Updated");
-                e.target.reset(); closeModals();
+                e.target.reset(); 
+                closeModals();
             } catch (err) {
                 showToast("Error: " + err.message);
             } finally {
@@ -402,8 +410,13 @@
             try {
                 const response = await fetch(`${BASE_URL}/load_wallets`, { method: "POST" });
                 const result = await response.json();
-                if(result.data?.wallets) trackedWallets = result.data.wallets;
+                if(result.data?.wallets) {
+                    trackedWallets = result.data.wallets;
+                } else if (result.wallets) {
+                    trackedWallets = result.wallets;
+                }
             } catch (err) {
+                // Fallback for demo/testing
                 if(trackedWallets.length === 0) {
                     trackedWallets = [
                         {address: '0x28c6c06298d514db089934071355e5743bf21d60', tag: 'Binance Hot Wallet'},
