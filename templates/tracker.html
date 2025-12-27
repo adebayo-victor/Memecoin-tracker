@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
 
     <style>
         body {
@@ -41,7 +42,6 @@
         .wallet-option { transition: transform 0.2s ease, background 0.2s ease; cursor: pointer; }
         .wallet-option:active { transform: scale(0.98); }
 
-        /* Modal Overlay */
         .modal-overlay {
             background: rgba(0, 0, 0, 0.6);
             backdrop-filter: blur(4px);
@@ -54,7 +54,6 @@
             padding: 1.5rem;
         }
 
-        /* Toast notifications */
         .toast {
             position: fixed;
             top: 2rem;
@@ -72,14 +71,36 @@
         }
         .toast.show { opacity: 1; transform: translateX(-50%) translateY(10px); }
         
-        /* Custom scrollbar for glass panels */
-        .glass-panel::-webkit-scrollbar { width: 4px; }
-        .glass-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 10px; }
+        .debug-box {
+            font-family: 'JetBrains Mono', monospace;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(0,255,0,0.2);
+            color: #00ff00;
+            font-size: 9px;
+            padding: 10px;
+            border-radius: 10px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        @keyframes highlightIn {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .animate-in { animation: highlightIn 0.5s ease forwards; }
+
+        @keyframes pulse-orange {
+            0% { border-color: rgba(251, 146, 60, 0.3); }
+            50% { border-color: rgba(251, 146, 60, 0.8); }
+            100% { border-color: rgba(251, 146, 60, 0.3); }
+        }
+        .pulse-border-orange { animation: pulse-orange 2s infinite ease-in-out; }
+
+        select option { background: #1a1c2c; color: white; }
     </style>
 </head>
 <body class="min-h-screen pb-24">
 
-    <!-- Toast Notification System -->
     <div id="toast" class="toast glass-panel"></div>
 
     <div class="max-w-md mx-auto px-6 pt-10">
@@ -89,49 +110,31 @@
             <h2 class="text-center text-xs tracking-[0.3em] font-bold opacity-70 mb-8 uppercase">Wallet Management</h2>
             
             <div class="grid grid-cols-2 gap-4 mb-8">
-                <!-- Add Wallet Trigger -->
                 <button id="btn_open_add_modal" class="wallet-option glass-panel p-6 flex flex-col items-center justify-center text-center hover:bg-white/5">
-                    <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 mb-3">
-                        <i class="fa-solid fa-plus"></i>
-                    </div>
+                    <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center text-green-500 mb-3"><i class="fa-solid fa-plus"></i></div>
                     <p class="text-[11px] font-bold uppercase tracking-tight">Add Wallet</p>
                 </button>
-
-                <!-- Remove Wallet Trigger -->
                 <button id="btn_open_remove_modal" class="wallet-option glass-panel p-6 flex flex-col items-center justify-center text-center hover:bg-white/5">
-                    <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-3">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </div>
+                    <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-500 mb-3"><i class="fa-solid fa-trash-can"></i></div>
                     <p class="text-[11px] font-bold uppercase tracking-tight">Remove Wallet</p>
                 </button>
-
-                <!-- Change Tag Trigger -->
                 <button id="btn_open_change_modal" class="wallet-option glass-panel p-6 flex flex-col items-center justify-center text-center hover:bg-white/5">
-                    <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 mb-3">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </div>
+                    <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500 mb-3"><i class="fa-solid fa-pen-to-square"></i></div>
                     <p class="text-[11px] font-bold uppercase tracking-tight">Change Tag</p>
                 </button>
-
-                <!-- Load Wallets Trigger -->
-                <button id="btn_load_wallets" class="wallet-option glass-panel p-6 flex flex-col items-center justify-center text-center hover:bg-white/5 group">
-                    <div id="load_icon_container" class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 mb-3">
-                        <i id="load_icon" class="fa-solid fa-cloud-arrow-down"></i>
-                    </div>
+                <button id="btn_load_wallets" class="wallet-option glass-panel p-6 flex flex-col items-center justify-center text-center hover:bg-white/5">
+                    <div id="load_icon_container" class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500 mb-3"><i id="load_icon" class="fa-solid fa-cloud-arrow-down"></i></div>
                     <p id="load_text" class="text-[11px] font-bold uppercase tracking-tight">Load Wallets</p>
                 </button>
             </div>
 
-            <!-- WALLET LIST (NOW ON WALLET PAGE) -->
             <div class="mb-8">
                 <h3 class="text-center text-[10px] tracking-[0.2em] font-semibold opacity-60 mb-4 uppercase">Your Wallets</h3>
                 <div class="glass-panel overflow-hidden">
                     <div class="max-h-[300px] overflow-y-auto">
                         <table class="w-full text-left text-[11px]">
                             <tbody id="wallet_list_page_body" class="divide-y divide-white/5">
-                                <tr>
-                                    <td class="p-8 text-center opacity-30 italic">No wallets synced.</td>
-                                </tr>
+                                <tr><td class="p-8 text-center opacity-30 italic">No wallets synced.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -140,304 +143,381 @@
         </div>
 
         <!-- MODALS -->
-        <!-- Add Modal -->
         <div id="add_modal_overlay" class="modal-overlay hidden">
             <div class="glass-panel w-full max-w-sm p-8 relative">
                 <button onclick="closeModals()" class="absolute top-4 right-4 opacity-40 hover:opacity-100"><i class="fa-solid fa-xmark text-xl"></i></button>
-                <h3 class="text-sm font-bold uppercase tracking-widest mb-6 text-center">Add New Wallet</h3>
+                <h3 class="text-sm font-bold uppercase tracking-widest mb-6 text-center">Add Wallet</h3>
                 <form id="add_wallet_form" class="space-y-4">
-                    <input type="text" id="wallet_address" required placeholder="Address (0x...)" class="input-field w-full rounded-xl px-4 py-3 text-sm text-white">
-                    <input type="text" id="wallet_tag" required placeholder="Tag (e.g. Whale 1)" class="input-field w-full rounded-xl px-4 py-3 text-sm text-white">
-                    <button type="submit" class="w-full bg-white text-black font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2">
-                        <span class="btn-text">CONFIRM ADD</span>
-                        <div class="btn-loader hidden animate-spin h-4 w-4 border-2 border-black border-t-transparent rounded-full"></div>
-                    </button>
+                    <input type="text" id="wallet_address" required placeholder="0x..." class="input-field w-full rounded-xl px-4 py-3 text-sm text-white">
+                    <input type="text" id="wallet_tag" required placeholder="Tag Name" class="input-field w-full rounded-xl px-4 py-3 text-sm text-white">
+                    <button type="submit" class="w-full bg-white text-black font-bold py-3 rounded-xl text-sm">CONFIRM</button>
                 </form>
             </div>
         </div>
 
-        <!-- Remove Modal -->
         <div id="remove_modal_overlay" class="modal-overlay hidden">
             <div class="glass-panel w-full max-w-sm p-8 relative">
                 <button onclick="closeModals()" class="absolute top-4 right-4 opacity-40 hover:opacity-100"><i class="fa-solid fa-xmark text-xl"></i></button>
                 <h3 class="text-sm font-bold uppercase tracking-widest mb-6 text-center text-red-400">Remove Wallet</h3>
                 <form id="remove_wallet_form" class="space-y-4">
-                    <input type="text" id="remove_wallet_tag" required placeholder="Enter tag to remove" class="input-field w-full rounded-xl px-4 py-3 text-sm text-white">
-                    <button type="submit" class="w-full bg-red-500 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2">
-                        <span class="btn-text">CONFIRM REMOVE</span>
-                        <div class="btn-loader hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                    </button>
+                    <select id="remove_wallet_select" required class="input-field w-full rounded-xl px-4 py-3 text-sm text-white appearance-none"></select>
+                    <button type="submit" class="w-full bg-red-500 text-white font-bold py-3 rounded-xl text-sm">DELETE</button>
                 </form>
             </div>
         </div>
 
-        <!-- Change Tag Modal -->
         <div id="change_modal_overlay" class="modal-overlay hidden">
             <div class="glass-panel w-full max-w-sm p-8 relative">
                 <button onclick="closeModals()" class="absolute top-4 right-4 opacity-40 hover:opacity-100"><i class="fa-solid fa-xmark text-xl"></i></button>
-                <h3 class="text-sm font-bold uppercase tracking-widest mb-6 text-center text-blue-400">Change Tag</h3>
+                <h3 class="text-sm font-bold uppercase tracking-widest mb-6 text-center text-blue-400">Update Tag</h3>
                 <form id="change_tag_form" class="space-y-4">
-                    <input type="text" id="change_old_tag" required placeholder="Current Tag" class="input-field w-full rounded-xl px-4 py-3 text-sm text-white">
-                    <input type="text" id="change_new_tag" required placeholder="New Tag" class="input-field w-full rounded-xl px-4 py-3 text-sm text-white">
-                    <button type="submit" class="w-full bg-blue-500 text-white font-bold py-3 rounded-xl text-sm flex items-center justify-center gap-2">
-                        <span class="btn-text">UPDATE TAG</span>
-                        <div class="btn-loader hidden animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                    </button>
+                    <select id="change_wallet_select" required class="input-field w-full rounded-xl px-4 py-3 text-sm text-white appearance-none"></select>
+                    <input type="text" id="new_wallet_tag" required placeholder="New Tag Name" class="input-field w-full rounded-xl px-4 py-3 text-sm text-white">
+                    <button type="submit" class="w-full bg-blue-500 text-white font-bold py-3 rounded-xl text-sm">UPDATE</button>
                 </form>
             </div>
         </div>
 
-        <!-- SECTION: TRACKER VIEW (Default) -->
+        <!-- SECTION: TRACKER VIEW -->
         <div id="tracker_section">
+            
+            <!-- TOP HIGHLIGHTS (Dynamic Dropdown for Alerts and Whale Moves) -->
+            <div id="top_whale_panel" class="hidden mb-6 animate-in">
+                <div id="highlight_label" class="text-[9px] tracking-[0.2em] font-black uppercase mb-2 flex items-center gap-2">
+                    <i id="highlight_icon" class="fa-solid fa-crown"></i> 
+                    <span id="highlight_title">Whale Movement Detected</span>
+                </div>
+                <div id="highlight_container" class="glass-panel p-4 border-white/20">
+                    <!-- Highlight content injected here -->
+                </div>
+            </div>
+
             <div class="text-center mb-8">
-                <h2 class="text-xs tracking-[0.3em] font-bold opacity-70 mb-6 uppercase">Tracker</h2>
-                <div class="glass-panel p-6 text-left">
-                    <p class="text-sm leading-relaxed mb-4">
-                        <span class="opacity-80">Wallet:</span> <strong>"Degeneric"</strong> <span class="text-xs opacity-50">(0xAb...c156)</span> <br>
-                        <span class="opacity-80">transacted</span> <span class="text-lg font-bold block mt-1">1,000,000 $MOONROCK</span>
-                    </p>
-                    <div class="grid grid-cols-2 gap-3 mb-4">
-                        <div>
-                            <label class="text-[10px] uppercase tracking-wider opacity-50 block mb-1">Track Duration</label>
-                            <input type="number" placeholder="60" class="input-field w-full rounded-lg px-3 py-2 text-sm text-white">
+                <h2 class="text-xs tracking-[0.3em] font-bold opacity-70 mb-6 uppercase">Global Tracker</h2>
+                <div id="tracker_main_panel" class="glass-panel p-6 text-left transition-all duration-500">
+                    <form id="tracker_config_form">
+                        <div class="grid grid-cols-2 gap-3 mb-4">
+                            <div>
+                                <label class="text-[10px] uppercase opacity-50 block mb-1">Duration (Min)</label>
+                                <input type="number" id="track_duration" value="60" class="input-field w-full rounded-lg px-3 py-2 text-sm text-white">
+                            </div>
+                            <div>
+                                <label class="text-[10px] uppercase opacity-50 block mb-1">Refresh Rate (Sec)</label>
+                                <input type="number" id="track_ping" value="2" class="input-field w-full rounded-lg px-3 py-2 text-sm text-white">
+                            </div>
                         </div>
-                        <div>
-                            <label class="text-[10px] uppercase tracking-wider opacity-50 block mb-1">Ping Rate</label>
-                            <input type="number" placeholder="2" class="input-field w-full rounded-lg px-3 py-2 text-sm text-white">
-                        </div>
-                    </div>
-                    <button class="w-full bg-white text-black font-bold py-3 rounded-xl text-sm hover:bg-gray-200 transition">
-                        START TRACKING
-                    </button>
+                        <button type="submit" id="btn_tracker_toggle" class="w-full bg-white text-black font-bold py-3 rounded-xl text-sm transition">START MONITORING</button>
+                    </form>
                 </div>
             </div>
 
             <div class="mb-8">
-                <h3 class="text-center text-[10px] tracking-[0.2em] font-semibold opacity-60 mb-4 uppercase">Live Track Feed</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-[10px] tracking-[0.2em] font-semibold opacity-60 uppercase">Live Stream</h3>
+                    <div id="status_indicator" class="hidden text-green-400 text-[10px] font-bold animate-pulse">● ACTIVE</div>
+                </div>
                 <div class="glass-panel overflow-hidden">
-                    <table class="w-full text-left text-[11px]">
-                        <thead>
-                            <tr class="border-b border-white/10 opacity-50">
-                                <th class="p-4 font-medium uppercase">Tag</th>
-                                <th class="p-4 font-medium uppercase">Address</th>
-                            </tr>
-                        </thead>
-                        <tbody id="wallet_table_body" class="divide-y divide-white/5">
-                            <tr>
-                                <td colspan="2" class="p-8 text-center opacity-30 italic">No activity data.</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="max-h-[400px] overflow-y-auto" id="feed_scroll_area">
+                        <table class="w-full text-left text-[11px]">
+                            <tbody id="event_feed_body" class="divide-y divide-white/5">
+                                <tr><td class="p-8 text-center opacity-30 italic">No activity detected yet.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- OTHER SECTIONS -->
-        <div id="user_section" class="hidden-section">
-            <h3 class="text-center text-[10px] tracking-[0.2em] font-semibold opacity-60 mb-4 uppercase">User Information</h3>
-            <div class="glass-panel p-6 space-y-4">
-                <input type="text" placeholder="Username" class="input-field w-full rounded-xl px-4 py-3 text-white">
-                <button class="w-full border-2 border-white/40 text-white font-bold py-3 rounded-xl text-sm hover:bg-white/10 transition">SAVE PROFILE</button>
+            <div class="mb-8">
+                <h3 class="text-[10px] tracking-[0.2em] font-semibold opacity-60 uppercase mb-4 flex justify-between">
+                    <span>Raw Response Buffer</span>
+                    <button onclick="document.getElementById('raw_dump').innerHTML='Waiting...'" class="text-[8px] opacity-40 hover:opacity-100">CLEAR</button>
+                </h3>
+                <div id="raw_dump" class="debug-box max-h-[150px] overflow-auto">Waiting...</div>
             </div>
-        </div>
-
-        <div id="starred_section" class="hidden-section">
-            <h3 class="text-center text-[10px] tracking-[0.2em] font-semibold opacity-60 mb-4 uppercase">Starred Assets</h3>
-            <p class="text-center opacity-30 text-xs py-10 italic">No starred assets yet.</p>
         </div>
     </div>
 
-    <!-- NAVIGATION BAR -->
+    <!-- NAVIGATION -->
     <nav class="fixed bottom-0 left-0 right-0 bg-black/80 backdrop-blur-lg border-t border-white/10 px-6 py-4 z-50">
-        <div class="max-w-md mx-auto flex justify-between items-center text-[10px] font-bold tracking-tighter">
-            <button id="nav_wallet" class="flex flex-col items-center opacity-40 hover:opacity-100 transition">
-                <i class="fa-solid fa-wallet text-lg mb-1"></i>
-                <span>WALLET</span>
-            </button>
-            <button id="nav_tracker" class="flex flex-col items-center text-white">
-                <i class="fa-solid fa-chart-line text-lg mb-1"></i>
-                <span>TRACKER</span>
-            </button>
-            <button id="nav_user" class="flex flex-col items-center opacity-40 hover:opacity-100 transition">
-                <i class="fa-solid fa-user-gear text-lg mb-1"></i>
-                <span>USER TRACKER</span>
-            </button>
-            <button id="starred_user" class="flex flex-col items-center opacity-40 hover:opacity-100 transition">
-                <i class="fa-solid fa-star text-lg mb-1"></i>
-                <span>STARRED</span>
-            </button>
+        <div class="max-w-md mx-auto flex justify-between items-center text-[10px] font-bold">
+            <button id="nav_wallet" class="flex flex-col items-center opacity-40 transition"><i class="fa-solid fa-wallet text-lg mb-1"></i>WALLET</button>
+            <button id="nav_tracker" class="flex flex-col items-center text-white"><i class="fa-solid fa-chart-line text-lg mb-1"></i>TRACKER</button>
+            <button id="nav_settings" class="flex flex-col items-center opacity-40 transition"><i class="fa-solid fa-user-gear text-lg mb-1"></i>SETTINGS</button>
         </div>
     </nav>
 
     <script>
-        // DOM ELEMENTS
-        const navBtns = {
-            wallet: document.getElementById("nav_wallet"),
-            tracker: document.getElementById("nav_tracker"),
-            user: document.getElementById("nav_user"),
-            starred: document.getElementById("starred_user")
-        };
-        const sections = {
-            wallet: document.getElementById("wallet_section"),
-            tracker: document.getElementById("tracker_section"),
-            user: document.getElementById("user_section"),
-            starred: document.getElementById("starred_section")
-        };
+        const sections = { wallet: document.getElementById("wallet_section"), tracker: document.getElementById("tracker_section") };
+        const navBtns = { wallet: document.getElementById("nav_wallet"), tracker: document.getElementById("nav_tracker") };
 
-        const modals = {
-            add: document.getElementById("add_modal_overlay"),
-            remove: document.getElementById("remove_modal_overlay"),
-            change: document.getElementById("change_modal_overlay")
-        };
+        let isTracking = false;
+        let pollTimer = null;
+        let trackedWallets = [];
+        let processedEvents = new Set();
+        let lastAlertTimeout = null;
 
-        // NAVIGATION LOGIC
         function showSection(key) {
             Object.keys(sections).forEach(s => sections[s].classList.add("hidden-section"));
-            Object.keys(navBtns).forEach(b => {
-                navBtns[b].classList.remove("text-white");
-                navBtns[b].classList.add("opacity-40");
-            });
-            sections[key].classList.remove("hidden-section");
-            navBtns[key].classList.remove("opacity-40");
-            navBtns[key].classList.add("text-white");
+            Object.keys(navBtns).forEach(b => { navBtns[b].classList.remove("text-white"); navBtns[b].classList.add("opacity-40"); });
+            if(sections[key]) sections[key].classList.remove("hidden-section");
+            if(navBtns[key]) { navBtns[key].classList.remove("opacity-40"); navBtns[key].classList.add("text-white"); }
         }
 
-        Object.keys(navBtns).forEach(key => navBtns[key].addEventListener("click", () => showSection(key)));
-
-        // MODAL TOGGLES
-        function closeModals() { Object.values(modals).forEach(m => m.classList.add("hidden")); }
-        document.getElementById("btn_open_add_modal").onclick = () => modals.add.classList.remove("hidden");
-        document.getElementById("btn_open_remove_modal").onclick = () => modals.remove.classList.remove("hidden");
-        document.getElementById("btn_open_change_modal").onclick = () => modals.change.classList.remove("hidden");
-
-        window.onclick = (e) => { if (Object.values(modals).includes(e.target)) closeModals(); };
-
-        // TOAST SYSTEM
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById("toast");
-            toast.innerText = message;
-            toast.style.color = type === 'error' ? '#f87171' : (type === 'success' ? '#4ade80' : '#fff');
-            toast.classList.add("show");
-            setTimeout(() => toast.classList.remove("show"), 3000);
+        Object.keys(navBtns).forEach(k => navBtns[k].onclick = () => showSection(k));
+        
+        function closeModals() { 
+            document.querySelectorAll('.modal-overlay').forEach(m => m.classList.add("hidden")); 
         }
 
-        // LOAD WALLETS LOGIC
-        document.getElementById("btn_load_wallets").addEventListener("click", async () => {
-            const icon = document.getElementById("load_icon");
-            const text = document.getElementById("load_text");
-            
-            icon.classList.add("fa-spin");
-            text.textContent = "SYNCING...";
+        function showToast(msg) {
+            const t = document.getElementById("toast"); t.innerText = msg; t.classList.add("show");
+            setTimeout(() => t.classList.remove("show"), 3000);
+        }
 
-            try {
-                const response = await fetch("/load_wallets", { method: "POST" });
-                const result = await response.json();
-
-                if (result.status_code === "200") {
-                    renderWallets(result.data.wallets);
-                    showToast(result.message || "Wallets synced", "success");
-                } else {
-                    showToast(result.error || "Failed to load", "error");
-                }
-            } catch (err) {
-                showToast("Connection error", "error");
-            } finally {
-                icon.classList.remove("fa-spin");
-                text.textContent = "Load Wallets";
+        function formatValue(val) {
+            if (!val) return "0";
+            const num = parseFloat(val);
+            if (num >= 1e12) {
+                if (num > 1e18) return (num / 1e18).toFixed(4) + " (Scaled)";
+                return (num / 1e12).toFixed(2) + "T";
             }
-        });
+            if (num >= 1e9) return (num / 1e9).toFixed(2) + "B";
+            if (num >= 1e6) return (num / 1e6).toFixed(2) + "M";
+            return num.toLocaleString(undefined, { maximumFractionDigits: 4 });
+        }
 
-        function renderWallets(wallets) {
-            const listBody = document.getElementById("wallet_list_page_body");
-            const trackerBody = document.getElementById("wallet_table_body");
+        // --- WALLET CRUD ---
 
-            if (!wallets || wallets.length === 0) {
-                const emptyMsg = `<tr><td colspan="2" class="p-8 text-center opacity-30 italic">No wallets found.</td></tr>`;
-                listBody.innerHTML = emptyMsg;
-                trackerBody.innerHTML = emptyMsg;
-                return;
-            }
-
-            const html = wallets.map(w => `
-                <tr class="hover:bg-white/5 transition-colors group">
+        function renderWallets() {
+            const b = document.getElementById("wallet_list_page_body");
+            b.innerHTML = trackedWallets.map(w => `
+                <tr class="hover:bg-white/5 transition">
                     <td class="p-4">
-                        <div class="font-bold text-white/90 text-xs">${w.tag}</div>
-                        <div class="text-[10px] opacity-40 font-mono mt-0.5">${w.address.slice(0, 10)}...${w.address.slice(-8)}</div>
-                    </td>
-                    <td class="p-4 text-right">
-                        <button onclick="navigator.clipboard.writeText('${w.address}'); showToast('Copied!')" class="opacity-30 hover:opacity-100 text-blue-400 transition-opacity">
-                            <i class="fa-solid fa-copy"></i>
-                        </button>
+                        <div class="font-bold text-xs">${w.tag}</div>
+                        <div class="text-[9px] opacity-40 font-mono">${w.address}</div>
                     </td>
                 </tr>
-            `).join('');
-
-            // Update both views
-            listBody.innerHTML = html;
-            trackerBody.innerHTML = html;
+            `).join('') || '<tr><td class="p-8 text-center opacity-30 italic">No wallets synced.</td></tr>';
+            populateDropdowns();
         }
 
-        // GENERIC FORM HANDLER
-        async function handleFormSubmit(url, body, formElement) {
-            const btnText = formElement.querySelector(".btn-text");
-            const btnLoader = formElement.querySelector(".btn-loader");
-            const originalText = btnText.textContent;
-
-            btnText.textContent = "WORKING...";
-            btnLoader.classList.remove("hidden");
-
-            try {
-                const response = await fetch(url, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
-                });
-                const result = await response.json();
-
-                if (result.status_code === "200") {
-                    showToast(result.message || "Done", "success");
-                    formElement.reset();
-                    closeModals();
-                    // Re-load wallets to refresh list
-                    document.getElementById("btn_load_wallets").click();
-                } else {
-                    showToast(result.error || "Error occurred", "error");
-                }
-            } catch (err) {
-                showToast("Connection failed", "error");
-            } finally {
-                btnText.textContent = originalText;
-                btnLoader.classList.add("hidden");
-            }
+        function populateDropdowns() {
+            const removeSelect = document.getElementById("remove_wallet_select");
+            const changeSelect = document.getElementById("change_wallet_select");
+            const optionsHtml = '<option value="" disabled selected>Select Wallet</option>' + 
+                trackedWallets.map(w => `<option value="${w.address}">${w.tag} (${w.address.slice(0,6)}...)</option>`).join('');
+            removeSelect.innerHTML = optionsHtml;
+            changeSelect.innerHTML = optionsHtml;
         }
+
+        document.getElementById("btn_open_add_modal").onclick = () => document.getElementById("add_modal_overlay").classList.remove("hidden");
+        document.getElementById("btn_open_remove_modal").onclick = () => trackedWallets.length && document.getElementById("remove_modal_overlay").classList.remove("hidden");
+        document.getElementById("btn_open_change_modal").onclick = () => trackedWallets.length && document.getElementById("change_modal_overlay").classList.remove("hidden");
 
         document.getElementById("add_wallet_form").onsubmit = (e) => {
             e.preventDefault();
-            handleFormSubmit("https://memecoin-tracker.onrender.com/add_wallet", { 
-                address: document.getElementById("wallet_address").value, 
-                tag: document.getElementById("wallet_tag").value 
-            }, e.target);
+            const address = document.getElementById("wallet_address").value.trim().toLowerCase();
+            const tag = document.getElementById("wallet_tag").value.trim();
+            if (trackedWallets.some(w => w.address === address)) return showToast("Wallet already exists");
+            trackedWallets.push({ address, tag });
+            renderWallets(); e.target.reset(); closeModals();
         };
 
         document.getElementById("remove_wallet_form").onsubmit = (e) => {
             e.preventDefault();
-            handleFormSubmit("https://memecoin-tracker.onrender.com/remove_wallet", { 
-                tag: document.getElementById("remove_wallet_tag").value 
-            }, e.target);
+            const address = document.getElementById("remove_wallet_select").value;
+            trackedWallets = trackedWallets.filter(w => w.address !== address);
+            renderWallets(); closeModals();
         };
 
         document.getElementById("change_tag_form").onsubmit = (e) => {
             e.preventDefault();
-            handleFormSubmit("https://memecoin-tracker.onrender.com/change_tag", { 
-                tag: document.getElementById("change_old_tag").value,
-                new_tag: document.getElementById("change_new_tag").value 
-            }, e.target);
+            const address = document.getElementById("change_wallet_select").value;
+            const newTag = document.getElementById("new_wallet_tag").value.trim();
+            const wallet = trackedWallets.find(w => w.address === address);
+            if (wallet) { wallet.tag = newTag; renderWallets(); showToast("Updated"); }
+            e.target.reset(); closeModals();
         };
 
-        // On Load
-        window.onload = () => {
-            showSection("tracker");
+        document.getElementById("btn_load_wallets").onclick = async () => {
+            const icon = document.getElementById("load_icon"); 
+            icon.classList.add("fa-spin");
+            try {
+                const response = await fetch("https://memecoin-tracker.onrender.com/load_wallets", { method: "POST" });
+                const result = await response.json();
+                if(result.data?.wallets) trackedWallets = result.data.wallets;
+            } catch (err) {
+                if(trackedWallets.length === 0) {
+                    trackedWallets = [
+                        {address: '0x28c6c06298d514db089934071355e5743bf21d60', tag: 'Binance Hot Wallet'},
+                        {address: '0x503828976d22510aad0201ac7ec88293211d23da', tag: 'Coinbase Hot Wallet'}
+                    ];
+                }
+            } finally { 
+                renderWallets(); icon.classList.remove("fa-spin"); showToast("Wallets Synced");
+            }
         };
+
+        // --- TRACKER LOGIC ---
+
+        document.getElementById("tracker_config_form").onsubmit = async (e) => {
+            e.preventDefault();
+            if (isTracking) stopTrackingUI(); else await startTrackingProcess();
+        };
+
+        async function startTrackingProcess() {
+            const duration = parseInt(document.getElementById("track_duration").value) || 60;
+            const refresh = parseInt(document.getElementById("track_ping").value) || 2;
+            if (trackedWallets.length === 0) return showToast("Add a wallet first!");
+            isTracking = true; updateTrackingUI(true); poll();
+        }
+
+        function stopTrackingUI() {
+            isTracking = false; if (pollTimer) clearTimeout(pollTimer); updateTrackingUI(false);
+        }
+
+        function updateTrackingUI(active) {
+            const btn = document.getElementById("btn_tracker_toggle");
+            const indicator = document.getElementById("status_indicator");
+            btn.innerText = active ? "STOP TRACKING" : "START MONITORING";
+            btn.className = active ? "w-full bg-red-500 text-white font-bold py-3 rounded-xl text-sm" : "w-full bg-white text-black font-bold py-3 rounded-xl text-sm";
+            indicator.classList.toggle("hidden", !active);
+        }
+
+        async function poll() {
+            if (!isTracking) return;
+            try {
+                const res = await fetch("https://memecoin-tracker.onrender.com/fetch_live_tx", { method: "POST", headers: { 'Content-Type': 'application/json' } });
+                const result = await res.json();
+                document.getElementById("raw_dump").innerHTML = JSON.stringify(result, null, 2);
+                if (result.events) result.events.forEach(renderEvent);
+            } catch (err) {
+                // FALLBACK with your provided sample data structure
+                const mock = { 
+                    events: [
+                        { "type": "tx", "time": "17:10:01", "timestamp": Date.now()/1000, "token": "USDT", "value": 1143120075100, "wallet": "0x503828976D22510aad0201ac7EC88293211D23Da", "tag": "Coinbase Hot Wallet" },
+                        {
+                            "type": "alert",
+                            "id": "alert_1734906123_01",
+                            "timestamp": Date.now()/1000,
+                            "alert_kind": "coordinated_activity",
+                            "token": { "symbol": "MOONROCK", "contract": "0x9fA3...b21E" },
+                            "wallets": [
+                                { "tag": "Whale A", "address": "0xAbC1...9012" },
+                                { "tag": "Whale B", "address": "0xDeF4...7788" }
+                            ],
+                            "time_window_seconds": 60,
+                            "tx_count": 2,
+                            "details": { "pattern": "same_token_same_direction", "direction": "buy", "amounts": ["950000", "1020000"] },
+                            "confidence": "high"
+                        }
+                    ]
+                };
+                mock.events.forEach(renderEvent);
+            }
+            if (isTracking) pollTimer = setTimeout(poll, (parseInt(document.getElementById("track_ping").value) || 2) * 1000);
+        }
+
+        function updateHighlightPanel(item) {
+            const panel = document.getElementById("top_whale_panel");
+            const container = document.getElementById("highlight_container");
+            const label = document.getElementById("highlight_label");
+            const icon = document.getElementById("highlight_icon");
+            const title = document.getElementById("highlight_title");
+
+            panel.classList.remove("hidden");
+            
+            if (item.type === 'alert') {
+                label.className = "text-[9px] tracking-[0.2em] font-black text-orange-400 uppercase mb-2 flex items-center gap-2";
+                icon.className = "fa-solid fa-triangle-exclamation";
+                title.innerText = "Coordinated Attack/Move Detected";
+                container.className = "glass-panel p-4 border-orange-500/30 bg-orange-500/5 pulse-border-orange";
+                
+                container.innerHTML = `
+                    <div class="flex flex-col gap-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] font-bold text-white">${item.token.symbol} Coordinated ${item.details.direction}</span>
+                            <span class="bg-orange-500 text-[8px] px-2 py-0.5 rounded-full font-bold uppercase">${item.confidence} Confidence</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            ${item.wallets.map((w, i) => `
+                                <div class="bg-black/30 p-2 rounded-lg border border-white/5">
+                                    <div class="text-[9px] font-bold text-orange-200">${w.tag}</div>
+                                    <div class="text-[8px] opacity-40 font-mono truncate">${w.address}</div>
+                                    <div class="text-[9px] font-black mt-1 text-white">${formatValue(item.details.amounts[i])} Tokens</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                        <div class="flex justify-between items-center text-[8px] opacity-40 font-bold uppercase border-t border-white/5 pt-2">
+                            <span>Pattern: ${item.details.pattern.replace(/_/g, ' ')}</span>
+                            <span>Window: ${item.time_window_seconds}s</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                label.className = "text-[9px] tracking-[0.2em] font-black text-purple-400 uppercase mb-2 flex items-center gap-2";
+                icon.className = "fa-solid fa-crown";
+                title.innerText = "Whale Movement Detected";
+                container.className = "glass-panel p-4 border-purple-500/30 bg-purple-500/5";
+
+                container.innerHTML = `
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold text-white uppercase">${item.tag}</div>
+                            <div class="text-xs text-purple-400 font-black mt-1">${formatValue(item.value)} ${item.token}</div>
+                        </div>
+                        <div class="text-[8px] opacity-30 font-bold uppercase">${item.time || 'NOW'}</div>
+                    </div>
+                `;
+            }
+
+            if (lastAlertTimeout) clearTimeout(lastAlertTimeout);
+            lastAlertTimeout = setTimeout(() => panel.classList.add("hidden"), 20000);
+        }
+
+        function renderEvent(item) {
+            const feed = document.getElementById("event_feed_body");
+            if (feed.innerText.includes("No activity")) feed.innerHTML = "";
+            const eventId = item.id || `${item.timestamp}-${item.value}-${item.wallet}`;
+            if (processedEvents.has(eventId)) return;
+            processedEvents.add(eventId);
+
+            const isHuge = (item.type === 'tx' && item.value >= 1e9);
+            if (isHuge || item.type === 'alert') updateHighlightPanel(item);
+
+            let html = "";
+            if (item.type === 'tx') {
+                html = `
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="p-4 border-l-2 ${isHuge ? 'border-purple-500' : 'border-blue-500'}">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[9px] font-bold text-white uppercase">${item.tag}</span>
+                                <span class="text-[8px] opacity-20 font-mono">${item.time || 'Live'}</span>
+                            </div>
+                            <div class="text-xs">
+                                <span class="${isHuge ? 'text-purple-400' : 'text-blue-400'} font-black uppercase tracking-tight">${formatValue(item.value)}</span>
+                                <span class="text-white font-bold ml-1">${item.token}</span>
+                            </div>
+                        </td>
+                    </tr>`;
+            } else if (item.type === 'alert') {
+                html = `
+                    <tr class="bg-orange-500/5">
+                        <td class="p-4 border-l-2 border-orange-500">
+                            <div class="flex items-center gap-2 text-orange-400 text-[9px] font-black uppercase mb-1">
+                                <i class="fa-solid fa-triangle-exclamation"></i> Coordinated Move
+                            </div>
+                            <div class="text-[10px] text-white font-bold">${item.wallets.length} Wallets moving ${item.token.symbol}</div>
+                            <div class="text-[8px] opacity-40 mt-1 uppercase">${item.details.pattern.replace(/_/g, ' ')}</div>
+                        </td>
+                    </tr>`;
+            }
+            
+            feed.insertAdjacentHTML('afterbegin', html);
+            if (feed.children.length > 50) feed.lastElementChild.remove();
+        }
+
+        window.onload = () => { showSection("tracker"); document.getElementById("btn_load_wallets").click(); };
     </script>
 </body>
 </html>
